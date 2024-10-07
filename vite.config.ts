@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import monkey, { cdn } from "vite-plugin-monkey";
+import monkey from "vite-plugin-monkey";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -24,17 +24,17 @@ export default defineConfig({
       userscript: {
         icon: "https://vitejs.dev/logo.svg",
         namespace: "npm/vite-plugin-monkey",
-        match: ["https://gordion.margonem.pl"],
+        match: ["https://*.margonem.pl"],
+        exclude: [
+          "http*://margonem.*/*",
+          "http*://www.margonem.*/*",
+          "http*://new.margonem.*/*",
+          "http*://forum.margonem.*/*",
+          "http*://commons.margonem.*/*",
+          "http*://dev-commons.margonem.*/*",
+        ],
       },
-      build: {
-        // externalGlobals: {
-        //   react: cdn.jsdelivr("React", "umd/react.production.min.js"),
-        //   "react-dom": cdn.jsdelivr(
-        //     "ReactDOM",
-        //     "umd/react-dom.production.min.js"
-        //   ),
-        // },
-      },
+      build: {},
     }),
   ],
 });
