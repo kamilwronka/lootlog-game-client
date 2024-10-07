@@ -18,7 +18,7 @@ export const GlobalContextProvider = ({
   const init = async () => {
     try {
       // @ts-ignore
-      if (!window.Engine.interface.alreadyInitialised) {
+      if (!window.Engine?.interface?.getAlreadyInitialised()) {
         setTimeout(init, 500);
         return;
       }
