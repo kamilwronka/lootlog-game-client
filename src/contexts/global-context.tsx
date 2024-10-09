@@ -16,18 +16,13 @@ export const GlobalContextProvider = ({
   const [initialized, setInitialized] = useState(false);
 
   const init = async () => {
-    try {
-      // @ts-ignore
-      if (!window.Engine?.interface?.getAlreadyInitialised()) {
-        setTimeout(init, 500);
-        return;
-      }
-
-      setInitialized(true);
-    } catch (error) {
-      console.error(error);
+    const initialized = window.Engine?.interface?.alreadyInitialised;
+    if (!initialized) {
       setTimeout(init, 500);
+      return;
     }
+
+    setInitialized(true);
   };
 
   useEffect(() => {
