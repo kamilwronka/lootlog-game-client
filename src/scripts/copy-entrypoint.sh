@@ -5,4 +5,8 @@ env=${ENVIRONMENT:-$default_env}
 
 echo "Using environment: $env";
 
-echo "const env = '$env';" | cat - src/templates/entrypoint.js > dist/entrypoint.js
+cp src/templates/entrypoint.js dist/entrypoint.js
+
+sed -i '' '23i\
+const env = "'$env'";
+' dist/entrypoint.js
