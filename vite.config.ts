@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     host: "localhost",
     hmr: {
-      port: 3000,
+      port: 3001,
       protocol: "ws",
     },
   },

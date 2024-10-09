@@ -19,7 +19,7 @@ export const getBattleParticipants = (
       },
       battleParticipant
     ) => {
-      const { originalId, prof, name, icon, wt } = battleParticipant;
+      const { originalId, prof, name, icon, wt, lvl } = battleParticipant;
 
       const necessaryData = {
         originalId,
@@ -28,6 +28,7 @@ export const getBattleParticipants = (
         icon,
         hpp: endBattleParticipants[originalId]?.hpp || 0,
         wt,
+        lvl,
       };
 
       if (battleParticipant.team === 1) {

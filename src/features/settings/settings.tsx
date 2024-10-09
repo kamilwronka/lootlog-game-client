@@ -12,8 +12,8 @@ export const Settings = () => {
   console.log(data);
 
   const handleLogin = () => {
-    // loginWithPopup();
-    loginWithRedirect();
+    loginWithPopup();
+    // loginWithRedirect();
   };
 
   return (
@@ -33,7 +33,7 @@ export const Settings = () => {
             <div>
               <div>Ustawienia 1</div>
               <div>Ustawienia 2</div>
-              <div>Ustawienia 3</div>
+              <div>Ustawienia 3s</div>
               {!isAuthenticated && (
                 <Button onClick={handleLogin}>Zaloguj się</Button>
               )}
