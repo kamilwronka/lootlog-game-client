@@ -18,7 +18,8 @@ export const GlobalContextProvider = ({
   const init = async () => {
     const initialized =
       window.Engine?.interface?.alreadyInitialised ||
-      window.Engine.interface.getAlreadyInitialised();
+      window.Engine?.interface?.getAlreadyInitialised?.();
+
     if (!initialized) {
       setTimeout(init, 500);
       return;
