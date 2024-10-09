@@ -5,6 +5,8 @@ type Props = {
   children: React.ReactNode;
 };
 
+console.log(AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_AUDIENCE);
+
 export const Auth0ProviderWithConfig: React.FC<Props> = ({ children }) => {
   const onRedirectCallback = (appState: AppState) => {
     window.history.replaceState(
