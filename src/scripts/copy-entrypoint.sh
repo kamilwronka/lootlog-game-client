@@ -5,22 +5,14 @@ env=${ENVIRONMENT:-$default_env}
 
 echo "Using environment: $env";
 
-cp src/templates/entrypoint.js dist/entrypoint.js;
-
-ls dist;
-
-cat dist/entrypoint.js;
+cp src/templates/entrypoint.js dist/entrypoint.user.js;
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i '' -e '23i\
    const env = "'$env'";
-   ' dist/entrypoint.js
+   ' dist/entrypoint.user.js
 else
   sed -i -e '23i\
     const env = "'$env'";
-   ' dist/entrypoint.js
+   ' dist/entrypoint.user.js
 fi
-
-# sed -i '' '23i\
-# const env = "'$env'";
-# ' dist/entrypoint.js
