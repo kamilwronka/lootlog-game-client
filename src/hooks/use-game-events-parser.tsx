@@ -72,12 +72,10 @@ export const useGameEventsParser = () => {
     }
 
     if (event.f && event.f.init === "1") {
-      console.log("onBattleStart");
       pendingBattle.current = event.f;
     }
 
     if (event.npcs_del && event.f && event.f.endBattle === 1) {
-      console.log("onBattleEnd");
       const isBattleFinished = event.f.endBattle === 1;
       const hasLoot = !!event.item;
       const isPendingBattle = pendingBattle.current?.w !== null;
@@ -129,9 +127,8 @@ export const useGameEventsParser = () => {
           name,
           respawnRandomness,
           respBaseSeconds,
+          location: window.Engine.map.d.name,
         };
-
-        console.log("timers server send payload", payload);
 
         createTimer(payload);
 
@@ -151,6 +148,8 @@ export const useGameEventsParser = () => {
 
       npcsMap.current.set(npc.d.id, npc.d);
     });
+
+    console.log(npcsMap.current);
   };
 
   useEffect(() => {
