@@ -47,6 +47,8 @@ export const useGameEventsParser = () => {
 
     if (keys.length <= 2) return;
 
+    console.log("handling event", event);
+
     if (event.npcs) {
       event.npcs.forEach((npc) => {
         const template = window.Engine.npcTplManager.getNpcTpl(npc.tpl);
@@ -76,6 +78,8 @@ export const useGameEventsParser = () => {
     }
 
     if (event.npcs_del && event.f && event.f.endBattle === 1) {
+      console.log("battle finished");
+
       const isBattleFinished = event.f.endBattle === 1;
       const hasLoot = !!event.item;
       const isPendingBattle = pendingBattle.current?.w !== null;
@@ -135,8 +139,6 @@ export const useGameEventsParser = () => {
         npcsMap.current.delete(npc.id);
       });
     }
-
-    console.log("handling event", event);
   };
 
   const prepareInitialNpcs = () => {
@@ -148,8 +150,6 @@ export const useGameEventsParser = () => {
 
       npcsMap.current.set(npc.d.id, npc.d);
     });
-
-    console.log(npcsMap.current);
   };
 
   useEffect(() => {

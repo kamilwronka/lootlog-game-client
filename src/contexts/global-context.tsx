@@ -16,7 +16,9 @@ export const GlobalContextProvider = ({
   const [initialized, setInitialized] = useState(false);
 
   const init = async () => {
-    const initialized = window.Engine?.interface?.alreadyInitialised;
+    const initialized =
+      window.Engine?.interface?.alreadyInitialised ||
+      window.Engine.interface.getAlreadyInitialised();
     if (!initialized) {
       setTimeout(init, 500);
       return;

@@ -7,9 +7,7 @@ import { useState } from "react";
 export const Settings = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { isAuthenticated, loginWithPopup, loginWithRedirect } = useAuth0();
-  const { data } = useGuilds();
-
-  console.log(data);
+  // const { data } = useGuilds();
 
   const handleLogin = () => {
     loginWithPopup();
