@@ -9,6 +9,8 @@ cp src/templates/entrypoint.js dist/entrypoint.js;
 
 ls dist;
 
+cat dist/entrypoint.js;
+
 sed -i '' '23i\
 const env = "'$env'";
-' dist/entrypoint.js;
+' dist/entrypoint.js
