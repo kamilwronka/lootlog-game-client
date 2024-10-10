@@ -66,6 +66,6 @@
   }
 }
 
-/* .border-window.transparent { 
-  width: auto !important;
-} */
+body {
+  background-color: #000;
+}
