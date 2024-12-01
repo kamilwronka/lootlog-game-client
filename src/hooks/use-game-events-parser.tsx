@@ -101,7 +101,8 @@ export const useGameEventsParser = () => {
       event.f &&
       event.f.endBattle === 1 &&
       !!event.item &&
-      !!event.loot
+      !!event.loot &&
+      event.loot.source === "fight"
     ) {
       const isPendingBattle = pendingBattle.current?.w !== null;
 
