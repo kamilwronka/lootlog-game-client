@@ -112,8 +112,6 @@ export const useGameEventsParser = () => {
           event.f.w
         );
 
-        console.log(killedNpcs, partyMembers);
-
         const loots = getLoots(event.item);
         const npcs = killedNpcs.map((npc) => {
           return {
@@ -220,11 +218,10 @@ export const useGameEventsParser = () => {
 
         const { nick: name, resp_rand: respawnRandomness } = npcData;
 
-        console.log(npcData);
-
         const payload = {
           respawnRandomness,
           respBaseSeconds,
+          world: window.Engine.worldConfig.getWorldName(),
           npc: {
             icon: npcData.icon,
             id: npcData.id,
@@ -243,8 +240,6 @@ export const useGameEventsParser = () => {
         npcsMap.current.delete(npc.id);
       });
     }
-
-    console.log(event);
   };
 
   const prepareInitialNpcs = () => {
