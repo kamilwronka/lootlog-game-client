@@ -3,19 +3,10 @@ import axios from "axios";
 import { useAuthToken } from "../auth/use-auth-token";
 import { API_URL } from "@/config/api";
 
-export type GuildRole = {
+export type Guild = {
   id: string;
   name: string;
-  color: number;
-};
-
-export type Guild = {
-  _id: string;
-  guildId: string;
-  name: string;
   icon: string | null;
-  initialized: boolean;
-  roles: GuildRole[];
 };
 
 export const useGuilds = () => {

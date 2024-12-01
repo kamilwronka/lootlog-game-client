@@ -1,5 +1,6 @@
 export type W = {
   [key: string]: {
+    id: number;
     originalId: number;
     name: string;
     lvl: number;
@@ -8,6 +9,7 @@ export type W = {
     icon: string;
     team: number;
     wt: number;
+    type: number;
   };
 };
 

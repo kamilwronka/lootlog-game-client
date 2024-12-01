@@ -50,6 +50,8 @@ export interface HeroD {
   warrior_stats: WarriorStats;
   passive_stats: any;
   matchmaking_champion: number;
+  icon: string;
+  hpp: number;
 }
 
 export interface WarriorStats {

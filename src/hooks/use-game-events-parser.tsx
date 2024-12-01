@@ -26,6 +26,9 @@ type Npc = {
   originalId?: number;
   name?: string;
   resp_rand?: number;
+  prof: string;
+  hpp?: number;
+  location?: string;
 };
 
 export const useGameEventsParser = () => {
@@ -107,25 +110,31 @@ export const useGameEventsParser = () => {
           pendingBattle.current?.w,
           event.f.w
         );
+
+        console.log(killedNpcs, partyMembers);
+
         const loots = getLoots(event.item);
-        const creator = getLootCreator();
+        const npcs = killedNpcs.map((npc) => {
+          return {
+            icon: npc.icon,
+            id: npc.id,
+            prof: npc.prof,
+            hpp: npc.hpp,
+            type: npcsMap.current.get(npc.id)?.type || 0,
+            wt: npc.wt,
+            lvl: npc.lvl,
+            name: npc.name,
+            location: window.Engine.map.d.name,
+          };
+        });
 
         const payload = {
-          killedNpcs: killedNpcs.map((npc) => {
-            return {
-              ...npc,
-              type: npcsMap.current.get(npc.originalId)?.type,
-            };
-          }),
-          partyMembers,
-          loots,
-          creator,
           world: window.Engine.worldConfig.getWorldName(),
-          source: event.loot.source,
-          location: {
-            name: window.Engine.map.d.name,
-            id: window.Engine.map.d.id,
-          },
+          source: event.loot.source.toUpperCase(),
+          location: window.Engine.map.d.name,
+          npcs,
+          loots,
+          players: partyMembers,
         };
 
         createLoot(payload);
@@ -140,39 +149,48 @@ export const useGameEventsParser = () => {
       event.loot.source === "dialog" &&
       event.npcs_del
     ) {
-      const killedNpcs = event.npcs_del.reduce((acc: Npc[], npc) => {
+      const killedNpcs = event.npcs_del.reduce((acc: Partial<Npc>[], npc) => {
         if (!npcsMap.current.has(npc.id)) return acc;
         const npcData = npcsMap.current.get(npc.id);
 
         if (npcData) {
-          acc.push({ ...npcData, originalId: npcData.id, name: npcData.nick });
+          acc.push({
+            icon: npcData.icon,
+            id: npcData.id,
+            prof: npcData.prof,
+            hpp: 0,
+            type: npcData.type,
+            wt: npcData.wt,
+            lvl: npcData.lvl,
+            name: npcData.nick,
+            location: window.Engine.map.d.name,
+          });
         }
 
         return acc;
       }, []);
 
-      const creator = getLootCreator();
-
       const payload = {
-        creator,
-        loots: getLoots(event.item),
         world: window.Engine.worldConfig.getWorldName(),
-        source: event.loot.source,
-        location: {
-          name: window.Engine.map.d.name,
-          id: window.Engine.map.d.id,
-        },
-        partyMembers: [
+        source: event.loot.source.toUpperCase(),
+        location: window.Engine.map.d.name,
+        loots: getLoots(event.item),
+        npcs: killedNpcs,
+        players: [
           {
-            lvl: creator.lvl,
-            prof: creator.prof,
-            icon: creator.img,
-            name: creator.nick,
-            originalId: creator.id,
-            hpp: 100,
+            id: window.Engine.hero.d.id,
+            name: window.Engine.hero.d.nick,
+            icon: window.Engine.hero.d.img,
+            prof: window.Engine.hero.d.prof,
+            hpp: Math.floor(
+              (window.Engine.hero.d.warrior_stats.hp /
+                window.Engine.hero.d.warrior_stats.maxhp) *
+                100
+            ),
+            lvl: window.Engine.hero.d.lvl,
+            accountId: window.Engine.hero.d.account,
           },
         ],
-        killedNpcs,
       };
 
       createLoot(payload);
@@ -200,11 +218,23 @@ export const useGameEventsParser = () => {
         }
 
         const { nick: name, resp_rand: respawnRandomness } = npcData;
+
+        console.log(npcData);
+
         const payload = {
-          name,
           respawnRandomness,
           respBaseSeconds,
-          location: window.Engine.map.d.name,
+          npc: {
+            icon: npcData.icon,
+            id: npcData.id,
+            prof: npcData.prof,
+            wt: npcData.wt,
+            hpp: 0,
+            type: npcData.type,
+            lvl: npcData.lvl,
+            name: npcData.nick,
+            location: window.Engine.map.d.name,
+          },
         };
 
         createTimer(payload);

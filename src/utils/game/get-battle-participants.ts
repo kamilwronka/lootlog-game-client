@@ -14,7 +14,7 @@ export const getBattleParticipants = (
   ).reduce(
     (
       acc: {
-        partyMembers: BattleParticipant[];
+        partyMembers: (BattleParticipant & { accountId: number })[];
         killedNpcs: BattleParticipant[];
       },
       battleParticipant
@@ -22,21 +22,23 @@ export const getBattleParticipants = (
       const { originalId, prof, name, icon, wt, lvl } = battleParticipant;
 
       const necessaryData = {
-        originalId,
+        id: originalId,
         prof,
         name,
         icon,
         hpp: endBattleParticipants[originalId]?.hpp || 0,
-        wt,
         lvl,
       };
 
       if (battleParticipant.team === 1) {
-        acc.partyMembers.push(necessaryData);
+        acc.partyMembers.push({
+          ...necessaryData,
+          accountId: window.Engine.hero.d.account,
+        });
       }
 
       if (battleParticipant.team === 2) {
-        acc.killedNpcs.push(necessaryData);
+        acc.killedNpcs.push({ ...necessaryData, wt });
       }
 
       return acc;

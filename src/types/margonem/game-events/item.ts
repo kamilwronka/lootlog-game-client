@@ -11,4 +11,6 @@ export type Item = {
   st: number;
   stat: string;
   own: number;
+  cl: number;
+  tpl: number;
 };

@@ -5,9 +5,19 @@ import { API_URL } from "@/config/api";
 import { useGuilds } from "@/hooks/api/useGuilds";
 
 export type UseCreateTimerOptions = {
-  name: string;
   respawnRandomness?: number;
   respBaseSeconds: number;
+  npc: {
+    id: number;
+    name: string;
+    icon: string;
+    prof: string;
+    type: number;
+    lvl: number;
+    location: string;
+    hpp: number;
+    wt: number;
+  };
 };
 
 export const useCreateTimer = () => {
@@ -19,13 +29,9 @@ export const useCreateTimer = () => {
     mutationFn: (options: UseCreateTimerOptions) => {
       const promiseArr =
         guilds?.forEach((guild) => {
-          return axios.post(
-            `${API_URL}/guilds/${guild.guildId}/timers`,
-            options,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          return axios.post(`${API_URL}/guilds/${guild.id}/timers`, options, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
         }) ?? [];
 
       return Promise.all(promiseArr);
