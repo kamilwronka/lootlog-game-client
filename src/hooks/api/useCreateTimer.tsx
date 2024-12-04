@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthToken } from "../auth/use-auth-token";
 import { API_URL } from "@/config/api";
-import { useGuilds } from "@/hooks/api/useGuilds";
+import { useGuilds } from "@/hooks/api/use-guilds";
 
 export type UseCreateTimerOptions = {
   respawnRandomness?: number;

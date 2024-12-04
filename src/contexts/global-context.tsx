@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 export type GlobalContextType = {
   initialized: boolean;
+  timersOpen: boolean;
+  setTimersOpen: (open: boolean) => void;
 };
 
 export const GlobalContext = createContext<GlobalContextType>(
@@ -14,6 +16,7 @@ export const GlobalContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [initialized, setInitialized] = useState(false);
+  const [timersOpen, setTimersOpen] = useState(false);
 
   const init = async () => {
     const initialized =
@@ -34,6 +37,8 @@ export const GlobalContextProvider = ({
 
   const value: GlobalContextType = {
     initialized,
+    timersOpen,
+    setTimersOpen,
   };
 
   return (

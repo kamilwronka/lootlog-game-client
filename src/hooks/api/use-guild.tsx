@@ -7,19 +7,26 @@ export type Guild = {
   id: string;
   name: string;
   icon: string | null;
+  vanityUrl?: string;
 };
 
-export const useGuilds = () => {
+type UseGuildOptions = {
+  guildId?: string;
+  retry?: boolean;
+};
+
+export const useGuild = ({ guildId, retry = true }: UseGuildOptions) => {
   const token = useAuthToken();
 
   const query = useQuery({
-    queryKey: ["user-guilds"],
+    queryKey: ["guilds", guildId],
     queryFn: () =>
-      axios.get<Guild[]>(`${API_URL}/users/@me/guilds`, {
+      axios.get<Guild>(`${API_URL}/guilds/${guildId}`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-    enabled: !!token,
+    enabled: !!token && !!guildId,
     select: (response) => response.data,
+    retry,
   });
 
   return query;

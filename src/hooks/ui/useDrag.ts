@@ -70,14 +70,15 @@ export const useDrag = ({
   );
 
   const handleMouseUp = (evt: MouseEvent) => {
-    evt.preventDefault();
-    evt.stopPropagation();
+    // evt.preventDefault();
+    // evt.stopPropagation();
 
     setIsDragging(false);
   };
 
   const handleMouseDown = (evt: ReactMouseEvent<HTMLElement>) => {
-    evt.preventDefault();
+    // evt.preventDefault();
+    // evt.stopPropagation();
 
     if (!(evt.target instanceof HTMLElement)) return;
     if (evt.target.nodeName === "BUTTON") return;

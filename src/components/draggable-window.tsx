@@ -26,14 +26,15 @@ export const DraggableWindow: FC<DraggableWindowProps> = ({ children, id }) => {
 
   return (
     <div
-      className="ll-pointer-events-auto ll-absolute"
+      className="ll-pointer-events-auto ll-absolute ll-bg-current"
       ref={draggableRef}
       style={{
         top: position.y,
         left: position.x,
       }}
+      onMouseDown={handleMouseDown}
     >
-      <div onMouseDown={handleMouseDown}>{children}</div>
+      {children}
     </div>
   );
 };
