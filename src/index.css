@@ -77,3 +77,7 @@
 body {
   background-color: #000;
 }
+
+#lootlog-root>* {
+  pointer-events: auto;
+}

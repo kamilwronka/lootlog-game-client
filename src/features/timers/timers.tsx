@@ -1,4 +1,5 @@
 import { DraggableWindow } from "@/components/draggable-window";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -11,9 +12,8 @@ import { SingleTimer } from "@/features/timers/components/single-timer";
 import { useGuilds } from "@/hooks/api/use-guilds";
 import { NpcType } from "@/hooks/api/use-npcs";
 import { useTimers } from "@/hooks/api/use-timers";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { groupBy } from "lodash";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SORT_ORDER = [
   NpcType.TITAN,
@@ -64,7 +64,7 @@ export const Timers = () => {
               })}
             </SelectContent>
           </Select>
-          <ScrollArea className="ll-mt-2 ll-text-white" type="scroll">
+          <ScrollArea className="ll-mt-2 ll-text-white ll-h-72">
             {Object.keys(groups).map((key) => {
               return (
                 <div key={key} className="ll-border-b">
