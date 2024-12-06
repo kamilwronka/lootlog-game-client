@@ -3,7 +3,6 @@ import axios from "axios";
 import { useAuthToken } from "../auth/use-auth-token";
 import { API_URL } from "@/config/api";
 import { Item } from "@/types/margonem/game-events/item";
-import { useGuilds } from "@/hooks/api/use-guilds";
 import { KilledNpc, PartyMember } from "@/utils/game/get-battle-participants";
 
 export type LootDto = {
@@ -30,19 +29,13 @@ export type UseCreateLootOptions = {
 
 export const useCreateLoot = () => {
   const token = useAuthToken();
-  const { data: guilds } = useGuilds();
 
   const mutation = useMutation({
     mutationKey: ["create-loot"],
     mutationFn: (options: UseCreateLootOptions) => {
-      const promiseArr =
-        guilds?.forEach((guild) => {
-          return axios.post(`${API_URL}/guilds/${guild.id}/loots`, options, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        }) ?? [];
-
-      return Promise.all(promiseArr);
+      return axios.post(`${API_URL}/loots`, options, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
     },
     onSuccess: () => {
       console.log("onSuccess");

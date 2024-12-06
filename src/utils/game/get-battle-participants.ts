@@ -1,6 +1,4 @@
 import { W } from "@/types/margonem/game-events/f";
-import { NpcD } from "@/types/margonem/npcs";
-import { OtherD } from "@/types/margonem/others";
 
 export type PartyMember = {
   id: number;
@@ -25,19 +23,15 @@ export type KilledNpc = {
 };
 
 export const getBattleParticipants = (
-  participants: W,
-  npcs: Map<string, NpcD>,
-  others: Map<string, OtherD>
+  initialParticipants: W | null,
+  endParticipants: W | null
 ) => {
-  if (!participants) return { partyMembers: [], killedNpcs: [] };
+  if (!initialParticipants) return { party: [], npcs: [] };
 
-  const { partyMembers, killedNpcs } = Object.entries(participants).reduce(
-    (
-      acc: { killedNpcs: KilledNpc[]; partyMembers: PartyMember[] },
-      [key, value]
-    ) => {
+  const { party, npcs } = Object.entries(initialParticipants).reduce(
+    (acc: { npcs: KilledNpc[]; party: PartyMember[] }, [key, value]) => {
       if (key === window.Engine.hero.d.id.toString()) {
-        acc.partyMembers.push({
+        acc.party.push({
           id: window.Engine.hero.d.id,
           name: window.Engine.hero.d.nick,
           icon: window.Engine.hero.d.img,
@@ -51,29 +45,45 @@ export const getBattleParticipants = (
       }
 
       if (key.startsWith("-")) {
-        const npc = npcs.get(key.replace("-", ""));
+        const hpp = endParticipants?.[key.replace("-", "")]?.hpp ?? 0;
+        const npcData = window.Engine.npcs.getById(value.originalId);
 
-        if (npc) {
-          acc.killedNpcs.push({
-            id: npc.tpl,
-            name: npc.nick,
-            icon: npc.icon,
-            hpp: value.hpp,
-            prof: npc.prof,
-            lvl: npc.lvl,
-            wt: npc.wt,
+        if (!npcData) {
+          acc.npcs.push({
+            id: value.originalId,
+            name: value.name,
+            icon: value.icon,
+            hpp: hpp,
+            prof: value.prof,
+            lvl: value.lvl,
+            wt: value.wt,
             location: window.Engine.map.d.name,
-            type: npc.type,
+            type: value.type ?? 2,
           });
+
+          return acc;
         }
+
+        acc.npcs.push({
+          id: npcData.d.tpl,
+          name: npcData.d.nick,
+          icon: npcData.d.icon,
+          hpp: hpp,
+          prof: npcData.d.prof,
+          lvl: npcData.d.lvl,
+          wt: npcData.d.wt,
+          location: window.Engine.map.d.name,
+          type: npcData.d.type,
+        });
 
         return acc;
       }
 
-      const other = others.get(key);
+      const othersData = window.Engine.others.check();
+      const other = othersData[key]?.d;
 
       if (other) {
-        acc.partyMembers.push({
+        acc.party.push({
           id: +other.id,
           name: other.nick,
           icon: other.icon,
@@ -86,8 +96,8 @@ export const getBattleParticipants = (
 
       return acc;
     },
-    { partyMembers: [], killedNpcs: [] }
+    { party: [], npcs: [] }
   );
 
-  return { partyMembers, killedNpcs };
+  return { party, npcs };
 };

@@ -18,6 +18,12 @@ export type NpcD = {
   resp_rand?: number;
 };
 
+export type NpcMap = {
+  [key: string]: Npc;
+};
+
 export type Npcs = {
   getDrawableList: () => Npc[];
+  check: () => NpcMap;
+  getById: (id: number) => Npc;
 };

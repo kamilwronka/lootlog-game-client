@@ -11,6 +11,10 @@ export type Other = {
   d: OtherD;
 };
 
+export type OtherMap = {
+  [key: string]: Other;
+};
+
 export type Others = {
-  check: () => Other[];
+  check: () => OtherMap;
 };
