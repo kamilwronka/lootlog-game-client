@@ -13,4 +13,5 @@ export type Item = {
   own: number;
   cl: number;
   tpl: number;
+  loc: "g" | "l";
 };

@@ -1,44 +1,87 @@
 import { W } from "@/types/margonem/game-events/f";
+import { NpcD } from "@/types/margonem/npcs";
+import { OtherD } from "@/types/margonem/others";
 
-export type BattleParticipant = Partial<W[string]>;
+export type PartyMember = {
+  id: number;
+  name: string;
+  icon: string;
+  hpp: number;
+  prof: string;
+  lvl: number;
+  accountId: number;
+};
+
+export type KilledNpc = {
+  id: number;
+  name: string;
+  icon: string;
+  hpp: number;
+  prof: string;
+  lvl: number;
+  wt: number;
+  location: string;
+  type: number;
+};
 
 export const getBattleParticipants = (
-  initialBattleParticipants: W | undefined,
-  endBattleParticipants: W | undefined
+  participants: W,
+  npcs: Map<string, NpcD>,
+  others: Map<string, OtherD>
 ) => {
-  if (!initialBattleParticipants || !endBattleParticipants)
-    return { partyMembers: [], killedNpcs: [] };
+  if (!participants) return { partyMembers: [], killedNpcs: [] };
 
-  const { partyMembers, killedNpcs } = Object.values(
-    initialBattleParticipants
-  ).reduce(
+  const { partyMembers, killedNpcs } = Object.entries(participants).reduce(
     (
-      acc: {
-        partyMembers: (BattleParticipant & { accountId: number })[];
-        killedNpcs: BattleParticipant[];
-      },
-      battleParticipant
+      acc: { killedNpcs: KilledNpc[]; partyMembers: PartyMember[] },
+      [key, value]
     ) => {
-      const { originalId, prof, name, icon, wt, lvl } = battleParticipant;
-
-      const necessaryData = {
-        id: originalId,
-        prof,
-        name,
-        icon,
-        hpp: endBattleParticipants[originalId]?.hpp || 0,
-        lvl,
-      };
-
-      if (battleParticipant.team === 1) {
+      if (key === window.Engine.hero.d.id.toString()) {
         acc.partyMembers.push({
-          ...necessaryData,
+          id: window.Engine.hero.d.id,
+          name: window.Engine.hero.d.nick,
+          icon: window.Engine.hero.d.img,
+          hpp: value.hpp,
+          prof: window.Engine.hero.d.prof,
+          lvl: window.Engine.hero.d.lvl,
           accountId: window.Engine.hero.d.account,
         });
+
+        return acc;
       }
 
-      if (battleParticipant.team === 2) {
-        acc.killedNpcs.push({ ...necessaryData, wt });
+      if (key.startsWith("-")) {
+        const npc = npcs.get(key.replace("-", ""));
+
+        if (npc) {
+          acc.killedNpcs.push({
+            id: npc.tpl,
+            name: npc.nick,
+            icon: npc.icon,
+            hpp: value.hpp,
+            prof: npc.prof,
+            lvl: npc.lvl,
+            wt: npc.wt,
+            location: window.Engine.map.d.name,
+            type: npc.type,
+          });
+        }
+
+        return acc;
+      }
+
+      const other = others.get(key);
+
+      if (other) {
+        acc.partyMembers.push({
+          id: +other.id,
+          name: other.nick,
+          icon: other.icon,
+          hpp: value.hpp,
+          prof: other.prof,
+          lvl: other.lvl,
+          accountId: other.account,
+        });
       }
 
       return acc;

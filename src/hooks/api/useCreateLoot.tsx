@@ -2,13 +2,28 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthToken } from "../auth/use-auth-token";
 import { API_URL } from "@/config/api";
-import { BattleParticipant } from "@/utils/game/get-battle-participants";
 import { Item } from "@/types/margonem/game-events/item";
 import { useGuilds } from "@/hooks/api/use-guilds";
+import { KilledNpc, PartyMember } from "@/utils/game/get-battle-participants";
+
+export type LootDto = {
+  id: number;
+  hid: string;
+  icon: string;
+  name: string;
+  pr: number;
+  prc: string;
+  stat: string;
+  cl: number;
+};
+
+export type CreateLootOptions = {
+  loots: LootDto[];
+};
 
 export type UseCreateLootOptions = {
-  npcs: BattleParticipant[];
-  players: (BattleParticipant & { accountId: number })[];
+  npcs: KilledNpc[];
+  players: PartyMember[];
   loots: Partial<Item>[];
   world: string;
 };

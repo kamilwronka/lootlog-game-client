@@ -6,6 +6,8 @@ import { Map } from "@/types/margonem/map";
 import { NpcTplManager } from "@/types/margonem/npc-tpl-manager";
 import { NpcIconManager } from "@/types/margonem/npc-icon-manager";
 import { WorldConfig } from "@/types/margonem/world-config";
+import { ChangePlayer } from "@/types/margonem/change-player";
+import { Others } from "@/types/margonem/others";
 
 export type Engine = {
   npcs: Npcs;
@@ -16,4 +18,6 @@ export type Engine = {
   npcTplManager: NpcTplManager;
   npcIconManager: NpcIconManager;
   worldConfig: WorldConfig;
+  changePlayer: ChangePlayer;
+  others: Others;
 };

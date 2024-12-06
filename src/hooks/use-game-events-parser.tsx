@@ -1,14 +1,17 @@
 import { useGlobalContext } from "@/contexts/global-context";
 import { useCreateLoot } from "@/hooks/api/useCreateLoot";
 import { useCreateTimer } from "@/hooks/api/useCreateTimer";
-import { F } from "@/types/margonem/game-events/f";
 import { GameEvent } from "@/types/margonem/game-events/game-event";
 import { HeroD } from "@/types/margonem/hero";
+import { NpcD } from "@/types/margonem/npcs";
+import { Other } from "@/types/margonem/others";
 import { checkIfAllowedNpc } from "@/utils/game/check-if-npc-is-monster";
 import { checkIfNpcIsWithinRange } from "@/utils/game/check-if-npc-within-range";
-import { getBattleParticipants } from "@/utils/game/get-battle-participants";
-import { getLootCreator } from "@/utils/game/get-loot-creator";
-import { getLoots } from "@/utils/game/get-loots";
+import {
+  getBattleParticipants,
+  KilledNpc,
+} from "@/utils/game/get-battle-participants";
+import { getLoot } from "@/utils/game/get-loots";
 import { useEffect, useRef, useState } from "react";
 
 type Npc = {
@@ -35,8 +38,9 @@ export const useGameEventsParser = () => {
   const { initialized } = useGlobalContext();
   const [gameEventsParserInitialized, setGameEventsParserInitialized] =
     useState(false);
-  const pendingBattle = useRef<F | null>(null);
-  const npcsMap = useRef(new Map<any, Npc>());
+  const npcsMap = useRef(new Map<string, NpcD>());
+  const playersMap = useRef(new Map<string, Other["d"]>());
+
   const { mutate: createLoot } = useCreateLoot();
   const { mutate: createTimer } = useCreateTimer();
 
@@ -68,14 +72,24 @@ export const useGameEventsParser = () => {
 
     if (keys.length <= 2) return;
 
+    if (event.other) {
+      Object.entries(event.other).forEach(([playerId, player]) => {
+        if (player.action === "CREATE") {
+          playersMap.current.set(playerId, { ...player, id: playerId });
+          return;
+        }
+      });
+    }
+
     if (event.npcs) {
       event.npcs.forEach((npc) => {
+        const npcId = npc.id.toString();
         const template = window.Engine.npcTplManager.getNpcTpl(npc.tpl);
         if (!template) return;
 
         const isAllowedNpc = checkIfAllowedNpc(template);
         if (!isAllowedNpc) return;
-        if (npcsMap.current.has(npc.id)) return;
+        if (npcsMap.current.has(npcId)) return;
 
         const icon = window.Engine.npcIconManager.getNpcIcon(npc.icon.id);
 
@@ -88,12 +102,8 @@ export const useGameEventsParser = () => {
           icon,
         };
 
-        npcsMap.current.set(npc.id, newNpc);
+        npcsMap.current.set(npcId, newNpc);
       });
-    }
-
-    if (event.f && event.f.init === "1") {
-      pendingBattle.current = event.f;
     }
 
     if (
@@ -104,42 +114,25 @@ export const useGameEventsParser = () => {
       !!event.loot &&
       event.loot.source === "fight"
     ) {
-      const isPendingBattle = pendingBattle.current?.w !== null;
+      const loots = getLoot(event.item);
+      if (loots.length === 0) return;
 
-      if (isPendingBattle) {
-        const { killedNpcs, partyMembers } = getBattleParticipants(
-          pendingBattle.current?.w,
-          event.f.w
-        );
+      const { killedNpcs, partyMembers } = getBattleParticipants(
+        event.f.w,
+        npcsMap.current,
+        playersMap.current
+      );
 
-        const loots = getLoots(event.item);
-        const npcs = killedNpcs.map((npc) => {
-          return {
-            icon: npc.icon,
-            id: npc.id,
-            prof: npc.prof,
-            hpp: npc.hpp,
-            type: npcsMap.current.get(npc.id)?.type || 0,
-            wt: npc.wt,
-            lvl: npc.lvl,
-            name: npc.name,
-            location: window.Engine.map.d.name,
-          };
-        });
+      const payload = {
+        world: window.Engine.worldConfig.getWorldName(),
+        source: event.loot.source.toUpperCase(),
+        location: window.Engine.map.d.name,
+        npcs: killedNpcs,
+        loots,
+        players: partyMembers,
+      };
 
-        const payload = {
-          world: window.Engine.worldConfig.getWorldName(),
-          source: event.loot.source.toUpperCase(),
-          location: window.Engine.map.d.name,
-          npcs,
-          loots,
-          players: partyMembers,
-        };
-
-        createLoot(payload);
-      }
-
-      pendingBattle.current = null;
+      createLoot(payload);
     }
 
     if (
@@ -148,9 +141,14 @@ export const useGameEventsParser = () => {
       event.loot.source === "dialog" &&
       event.npcs_del
     ) {
-      const killedNpcs = event.npcs_del.reduce((acc: Partial<Npc>[], npc) => {
-        if (!npcsMap.current.has(npc.id)) return acc;
-        const npcData = npcsMap.current.get(npc.id);
+      const loots = getLoot(event.item);
+      if (loots.length === 0) return;
+
+      const killedNpcs = event.npcs_del.reduce((acc: KilledNpc[], npc) => {
+        const npcId = npc.id.toString();
+
+        if (!npcsMap.current.has(npcId)) return acc;
+        const npcData = npcsMap.current.get(npcId);
 
         if (npcData) {
           acc.push({
@@ -173,7 +171,7 @@ export const useGameEventsParser = () => {
         world: window.Engine.worldConfig.getWorldName(),
         source: event.loot.source.toUpperCase(),
         location: window.Engine.map.d.name,
-        loots: getLoots(event.item),
+        loots,
         npcs: killedNpcs,
         players: [
           {
@@ -197,7 +195,9 @@ export const useGameEventsParser = () => {
 
     if (event.npcs_del) {
       event.npcs_del.forEach((npc) => {
-        const npcData = npcsMap.current.get(npc.id);
+        const npcId = npc.id.toString();
+
+        const npcData = npcsMap.current.get(npcId);
         if (!npcData) return;
 
         const isWithinRange = checkIfNpcIsWithinRange(
@@ -205,14 +205,14 @@ export const useGameEventsParser = () => {
         );
 
         if (!isWithinRange) {
-          npcsMap.current.delete(npc.id);
+          npcsMap.current.delete(npcId);
           return;
         }
 
         const { respBaseSeconds } = npc;
 
         if (!respBaseSeconds) {
-          npcsMap.current.delete(npc.id);
+          npcsMap.current.delete(npcId);
           return;
         }
 
@@ -237,8 +237,19 @@ export const useGameEventsParser = () => {
 
         createTimer(payload);
 
-        npcsMap.current.delete(npc.id);
+        npcsMap.current.delete(npcId);
       });
+    }
+
+    if (event.other) {
+      Object.entries(event.other).forEach(([playerId, player]) => {
+        if (player.del) {
+          playersMap.current.delete(playerId);
+          return;
+        }
+      });
+
+      // console.log(playersMap.current);
     }
   };
 
@@ -249,7 +260,15 @@ export const useGameEventsParser = () => {
       const isAllowedNpc = checkIfAllowedNpc(npc.d);
       if (!isAllowedNpc) return;
 
-      npcsMap.current.set(npc.d.id, npc.d);
+      npcsMap.current.set(npc.d.id.toString(), npc.d);
+    });
+  };
+
+  const prepareInitialPlayers = () => {
+    const players = window.Engine.others.check();
+
+    Object.values(players).forEach((player) => {
+      playersMap.current.set(player.d.id, player.d);
     });
   };
 
@@ -257,6 +276,7 @@ export const useGameEventsParser = () => {
     if (!initialized || gameEventsParserInitialized) return;
 
     prepareInitialNpcs();
+    prepareInitialPlayers();
     setupGameEventsHandler();
 
     return () => {

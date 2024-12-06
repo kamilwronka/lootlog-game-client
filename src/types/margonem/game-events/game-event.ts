@@ -3,6 +3,7 @@ import { Item, ItemEvent } from "@/types/margonem/game-events/item";
 import { Loot } from "@/types/margonem/game-events/loot";
 import { Npcs } from "@/types/margonem/game-events/npcs";
 import { NpcsDel } from "@/types/margonem/game-events/npcs_del";
+import { Other } from "@/types/margonem/game-events/other";
 
 export type GameEvent = {
   e: "ok" | "error";
@@ -12,4 +13,5 @@ export type GameEvent = {
   npcs_del?: NpcsDel;
   item?: ItemEvent;
   loot?: Loot;
+  other?: Other;
 };
