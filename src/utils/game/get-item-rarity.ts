@@ -1,4 +1,6 @@
-export const getItemRarity = (stat: string) => {
+export const getItemRarity = (stat: string): string | undefined => {
+  if (!stat) return undefined;
+
   const statsObj: { [key: string]: string } = {};
   const stats = stat.split(";");
 
