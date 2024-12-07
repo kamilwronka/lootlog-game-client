@@ -38,8 +38,6 @@ export const useGameEventsParser = () => {
   };
 
   const removeGameEventsHandler = () => {
-    console.log("deinitializating game events handler");
-
     if (!window.Engine.communication.ogSuccessData) return;
 
     window.Engine.communication.successData =
@@ -53,7 +51,6 @@ export const useGameEventsParser = () => {
     if (keys.length <= 2) return;
 
     if (event.f && event.f.w && event.f.init === "1") {
-      console.log("handle abttle start");
       pendingBattle.current = event.f.w;
     }
 
@@ -91,7 +88,6 @@ export const useGameEventsParser = () => {
       event.loot.source === "dialog" &&
       event.npcs_del
     ) {
-      console.log("handle dialog loot");
       const loots = getLoot(event.item);
       if (loots.length === 0) return;
 
@@ -153,12 +149,9 @@ export const useGameEventsParser = () => {
     }
 
     if (event.npcs_del) {
-      console.log("handle npc delete");
       event.npcs_del.forEach((npc) => {
         const npcData = window.Engine.npcs.getById(npc.id)?.d;
         if (!npcData) return;
-
-        console.log(npcData);
 
         const isWithinRange = checkIfNpcIsWithinRange(
           npcData as unknown as HeroD
