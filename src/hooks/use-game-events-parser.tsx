@@ -91,6 +91,72 @@ export const useGameEventsParser = () => {
       }
     }
 
+    if (
+      event.item &&
+      event.loot &&
+      event.loot.source === "dialog" &&
+      event.npcs_del
+    ) {
+      const loots = getLoot(event.item);
+      if (loots.length > 0) {
+        const npcs = event.npcs_del.reduce((acc: KilledNpc[], npc) => {
+          const npcData = window.Engine.npcs.getById(npc.id)?.d;
+          if (!npcData) return acc;
+
+          if (npcData) {
+            acc.push({
+              icon: npcData.icon,
+              id: npcData.id,
+              prof: npcData.prof,
+              hpp: 0,
+              type: npcData.type,
+              wt: npcData.wt,
+              lvl: npcData.lvl,
+              name: npcData.nick,
+              location: window.Engine.map.d.name,
+            });
+          }
+
+          return acc;
+        }, []);
+
+        if (npcs.length > 0) {
+          const {
+            id,
+            nick,
+            img,
+            prof,
+            warrior_stats: { hp, maxhp },
+            lvl,
+            account,
+          } = window.Engine.hero.d;
+
+          const players = [
+            {
+              id,
+              name: nick,
+              icon: img,
+              prof,
+              hpp: Math.floor((hp / maxhp) * 100),
+              lvl,
+              accountId: account,
+            },
+          ];
+
+          const payload = {
+            world: window.Engine.worldConfig.getWorldName(),
+            source: event.loot.source.toUpperCase(),
+            location: window.Engine.map.d.name,
+            loots,
+            npcs,
+            players,
+          };
+
+          createLoot(payload);
+        }
+      }
+    }
+
     if (event.item && event.loot && event.loot.source === "dialog") {
       const loots = getLoot(event.item);
       if (loots.length > 0 && talkingNpcId.current) {
