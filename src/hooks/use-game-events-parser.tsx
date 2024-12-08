@@ -17,6 +17,7 @@ export const useGameEventsParser = () => {
   const [gameEventsParserInitialized, setGameEventsParserInitialized] =
     useState(false);
   const pendingBattle = useRef<W | null>(null);
+  const talkingNpcId = useRef<string | null>(null);
 
   const { mutate: createLoot } = useCreateLoot();
   const { mutate: createTimer } = useCreateTimer();
@@ -50,6 +51,14 @@ export const useGameEventsParser = () => {
 
     if (keys.length <= 2) return;
 
+    if (event.d) {
+      const npcId = event.d[2];
+
+      if (npcId && npcId.length > 0) {
+        talkingNpcId.current = npcId;
+      }
+    }
+
     if (event.f && event.f.w && event.f.init === "1") {
       pendingBattle.current = event.f.w;
     }
@@ -82,69 +91,57 @@ export const useGameEventsParser = () => {
       }
     }
 
-    if (
-      event.item &&
-      event.loot &&
-      event.loot.source === "dialog" &&
-      event.npcs_del
-    ) {
+    if (event.item && event.loot && event.loot.source === "dialog") {
       const loots = getLoot(event.item);
-      if (loots.length === 0) return;
-
-      const npcs = event.npcs_del.reduce((acc: KilledNpc[], npc) => {
-        const npcData = window.Engine.npcs.getById(npc.id)?.d;
-        if (!npcData) return acc;
+      if (loots.length > 0 && talkingNpcId.current) {
+        const npcData = window.Engine.npcs.getById(+talkingNpcId.current)?.d;
 
         if (npcData) {
-          acc.push({
-            icon: npcData.icon,
-            id: npcData.id,
-            prof: npcData.prof,
-            hpp: 0,
-            type: npcData.type,
-            wt: npcData.wt,
-            lvl: npcData.lvl,
-            name: npcData.nick,
-            location: window.Engine.map.d.name,
-          });
-        }
-
-        return acc;
-      }, []);
-
-      if (npcs.length > 0) {
-        const {
-          id,
-          nick,
-          img,
-          prof,
-          warrior_stats: { hp, maxhp },
-          lvl,
-          account,
-        } = window.Engine.hero.d;
-
-        const players = [
-          {
+          const {
             id,
-            name: nick,
-            icon: img,
+            nick,
+            img,
             prof,
-            hpp: Math.floor((hp / maxhp) * 100),
+            warrior_stats: { hp, maxhp },
             lvl,
-            accountId: account,
-          },
-        ];
+            account,
+          } = window.Engine.hero.d;
 
-        const payload = {
-          world: window.Engine.worldConfig.getWorldName(),
-          source: event.loot.source.toUpperCase(),
-          location: window.Engine.map.d.name,
-          loots,
-          npcs,
-          players,
-        };
+          const players = [
+            {
+              id,
+              name: nick,
+              icon: img,
+              prof,
+              hpp: Math.floor((hp / maxhp) * 100),
+              lvl,
+              accountId: account,
+            },
+          ];
 
-        createLoot(payload);
+          const payload = {
+            world: window.Engine.worldConfig.getWorldName(),
+            source: event.loot.source.toUpperCase(),
+            location: window.Engine.map.d.name,
+            loots,
+            npcs: [
+              {
+                icon: npcData.icon,
+                id: npcData.id,
+                prof: npcData.prof,
+                hpp: 0,
+                type: npcData.type,
+                wt: npcData.wt,
+                lvl: npcData.lvl,
+                name: npcData.nick,
+                location: window.Engine.map.d.name,
+              },
+            ],
+            players,
+          };
+
+          createLoot(payload);
+        }
       }
     }
 
