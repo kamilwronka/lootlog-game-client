@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 export type GlobalContextType = {
   initialized: boolean;
+  timersOpen: boolean;
+  setTimersOpen: (open: boolean) => void;
 };
 
 export const GlobalContext = createContext<GlobalContextType>(
@@ -14,20 +16,19 @@ export const GlobalContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [initialized, setInitialized] = useState(false);
+  const [timersOpen, setTimersOpen] = useState(false);
 
   const init = async () => {
-    try {
-      // @ts-ignore
-      if (!window.Engine?.interface?.getAlreadyInitialised()) {
-        setTimeout(init, 500);
-        return;
-      }
+    const initialized =
+      window.Engine?.interface?.alreadyInitialised ||
+      window.Engine?.interface?.getAlreadyInitialised?.();
 
-      setInitialized(true);
-    } catch (error) {
-      console.error(error);
+    if (!initialized) {
       setTimeout(init, 500);
+      return;
     }
+
+    setInitialized(true);
   };
 
   useEffect(() => {
@@ -36,6 +37,8 @@ export const GlobalContextProvider = ({
 
   const value: GlobalContextType = {
     initialized,
+    timersOpen,
+    setTimersOpen,
   };
 
   return (

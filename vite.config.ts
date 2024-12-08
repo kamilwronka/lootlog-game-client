@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     host: "localhost",
     hmr: {
-      port: 3000,
+      port: 3001,
       protocol: "ws",
     },
   },
@@ -24,7 +24,12 @@ export default defineConfig({
       userscript: {
         icon: "https://vitejs.dev/logo.svg",
         namespace: "npm/vite-plugin-monkey",
-        match: ["https://*.margonem.pl"],
+        match: [
+          "https://*.margonem.pl",
+          "https://*.margonem.com",
+          "https://*.margonem.pl/*",
+          "https://*.margonem.com/*",
+        ],
         exclude: [
           "http*://margonem.*/*",
           "http*://www.margonem.*/*",

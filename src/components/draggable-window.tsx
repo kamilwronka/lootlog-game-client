@@ -1,5 +1,6 @@
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDrag } from "@/hooks/ui/useDrag";
-import { FC, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import { useLocalStorage } from "react-use";
 
 export type DraggableWindowProps = {
@@ -26,14 +27,18 @@ export const DraggableWindow: FC<DraggableWindowProps> = ({ children, id }) => {
 
   return (
     <div
-      className="ll-pointer-events-auto ll-absolute"
+      className="ll-pointer-events-auto ll-absolute ll-bg-current"
       ref={draggableRef}
       style={{
         top: position.y,
         left: position.x,
       }}
+      onMouseDown={handleMouseDown}
+      onWheel={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
-      <div onMouseDown={handleMouseDown}>{children}</div>
+      {children}
+      {/* {children} */}
     </div>
   );
 };
