@@ -61,6 +61,7 @@ export const useGameEventsParser = () => {
 
     if (event.f && event.f.w && event.f.init === "1") {
       pendingBattle.current = event.f.w;
+      console.log(event, "battle start");
     }
 
     if (
@@ -70,6 +71,7 @@ export const useGameEventsParser = () => {
       !!event.loot &&
       event.loot.source === "fight"
     ) {
+      console.log(event, "battle end");
       const loots = getLoot(event.item);
 
       if (loots.length > 0) {

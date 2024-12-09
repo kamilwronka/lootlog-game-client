@@ -7,7 +7,7 @@ export const getLoot = (items: ItemEvent = {}): LootDto[] => {
     const { hid, icon, name, pr, prc, stat, cl, tpl, loc } = item;
     const rarity = getItemRarity(stat);
 
-    if (rarity && loc === "l" && rarity !== "common") {
+    if (rarity && (loc === "l" || loc === "k") && rarity !== "common") {
       acc.push({
         id: tpl,
         hid,
