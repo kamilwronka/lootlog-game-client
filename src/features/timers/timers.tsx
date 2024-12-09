@@ -110,23 +110,21 @@ export const Timers = () => {
             <div className="inner-content">
               <div className="window-list elite-timer-wnd">
                 <div className="scroll-wrapper">
-                  <ScrollArea className="ll-h-64 ll-py-1">
-                    <div className="scroll-pane">
-                      {sorted?.length === 0 && (
-                        <div className="empty">----</div>
-                      )}
-                      <div className="list npc-list">
-                        {sorted?.map((timer) => {
-                          return (
-                            <SingleTimer
-                              key={timer.npc.id}
-                              timer={timer}
-                              guildId={selectedGuild}
-                            />
-                          );
-                        })}
-                      </div>
+                  <ScrollArea className="ll-h-72 ll-py-1">
+                    {/* <div className="scroll-pane"> */}
+                    {sorted?.length === 0 && <div className="empty">----</div>}
+                    <div className="list npc-list">
+                      {sorted?.map((timer) => {
+                        return (
+                          <SingleTimer
+                            key={timer.npc.id}
+                            timer={timer}
+                            guildId={selectedGuild}
+                          />
+                        );
+                      })}
                     </div>
+                    {/* </div> */}
                   </ScrollArea>
                 </div>
               </div>
