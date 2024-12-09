@@ -21,7 +21,6 @@ export const Settings = () => {
 
   return (
     <>
-      dd
       <DraggableWindow id="settings-trigger">
         <div className="ll-bg-black ll-text-white ll-flex">
           <Button onClick={() => setIsSettingsOpen(!isSettingsOpen)}>

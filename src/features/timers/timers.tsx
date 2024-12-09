@@ -54,8 +54,11 @@ export const Timers = () => {
           </div>
           <div className="content">
             <Select value={selectedGuild} onValueChange={setSelectedGuild}>
-              <SelectTrigger className="w-[180px] ll-text-white ll-border-white ll-h-7 ll-my-2">
-                <SelectValue placeholder="Wybierz lootlog..." />
+              <SelectTrigger className="w-[180px] ll-text-white ll-border-white ll-h-4 ll-my-1">
+                <SelectValue
+                  placeholder="Wybierz lootlog..."
+                  className="ll-h-4"
+                />
               </SelectTrigger>
               <SelectContent>
                 {guilds?.map((guild) => {
@@ -70,7 +73,7 @@ export const Timers = () => {
             <div className="inner-content">
               <div className="window-list elite-timer-wnd">
                 <div className="scroll-wrapper">
-                  <ScrollArea className="ll-h-64 ll-py-2">
+                  <ScrollArea className="ll-h-64 ll-py-1">
                     <div className="scroll-pane">
                       {sorted?.length === 0 && (
                         <div className="empty">----</div>
