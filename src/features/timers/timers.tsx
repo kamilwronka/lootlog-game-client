@@ -41,7 +41,7 @@ export const Timers = () => {
 
   useEffect(() => {
     if (socket && guilds) {
-      socket.on("timers-create", (data) => {
+      socket.on("timers-create", (data: Timer) => {
         console.log(data);
         queryClient.setQueryData(
           ["guild-timers", selectedGuild, world],
@@ -57,7 +57,14 @@ export const Timers = () => {
                 ),
               };
             }
-            return { data: [...old.data, data] };
+            return {
+              data: [...old.data, data].sort((a, b) => {
+                return (
+                  new Date(a.minSpawnTime).getTime() -
+                  new Date(b.minSpawnTime).getTime()
+                );
+              }),
+            };
           }
         );
       });
