@@ -36,7 +36,9 @@ export const Timers = () => {
   const { data: timers } = useTimers({ guildId: selectedGuild });
 
   const sorted = timers?.sort((a, b) => {
-    return SORT_ORDER.indexOf(a.npc.type) - SORT_ORDER.indexOf(b.npc.type);
+    return (
+      new Date(a.minSpawnTime).getTime() - new Date(b.minSpawnTime).getTime()
+    );
   });
 
   useEffect(() => {
@@ -58,12 +60,7 @@ export const Timers = () => {
               };
             }
             return {
-              data: [...old.data, data].sort((a, b) => {
-                return (
-                  new Date(a.minSpawnTime).getTime() -
-                  new Date(b.minSpawnTime).getTime()
-                );
-              }),
+              data: [...old.data, data],
             };
           }
         );
