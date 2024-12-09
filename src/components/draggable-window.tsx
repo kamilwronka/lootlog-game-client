@@ -27,7 +27,7 @@ export const DraggableWindow: FC<DraggableWindowProps> = ({ children, id }) => {
 
   return (
     <div
-      className="ll-pointer-events-auto ll-absolute ll-bg-current"
+      className="ll-pointer-events-auto ll-absolute"
       ref={draggableRef}
       style={{
         top: position.y,

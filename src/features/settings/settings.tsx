@@ -21,8 +21,9 @@ export const Settings = () => {
 
   return (
     <>
+      dd
       <DraggableWindow id="settings-trigger">
-        <div className=" ll-text-white ll-flex">
+        <div className="ll-bg-black ll-text-white ll-flex">
           <Button onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
             Lootlog
           </Button>
@@ -31,7 +32,7 @@ export const Settings = () => {
       </DraggableWindow>
       {isSettingsOpen && (
         <DraggableWindow id="settings-window">
-          <div className="  ll-text-white ll-w-96">
+          <div className="ll-bg-black ll-text-white ll-w-96">
             <div>Ustawienia</div>
             <div>
               <Button onClick={handleTimersToggle}>Pokaż/ukryj timery</Button>

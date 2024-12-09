@@ -29,6 +29,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.32",
     "@types/lodash": "^4.17.13",
     "@types/node": "^22.7.4",
     "@types/qs": "^6.9.17",

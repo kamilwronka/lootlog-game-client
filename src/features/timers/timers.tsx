@@ -22,14 +22,6 @@ const SORT_ORDER = [
   NpcType.ELITE2,
   NpcType.ELITE,
 ];
-const NPC_NAMES: { [key: string]: string } = {
-  TITAN: "Tytan",
-  COLOSSUS: "Kolos",
-  HERO: "Heros",
-  ELITE3: "Elita III",
-  ELITE2: "Elita II",
-  ELITE: "Elita",
-};
 
 export const Timers = () => {
   const { data: guilds } = useGuilds();
@@ -44,48 +36,67 @@ export const Timers = () => {
     return SORT_ORDER.indexOf(a.npc.type) - SORT_ORDER.indexOf(b.npc.type);
   });
 
-  const groups = groupBy(sorted, "npc.type");
+  // const groups = groupBy(sorted, "npc.type");
 
   return (
     timersOpen && (
       <DraggableWindow id="timers">
-        <div className="ll-bg-current ll-w-[225px] ll-p-2">
-          <Select value={selectedGuildId} onValueChange={setSelectedGuildId}>
-            <SelectTrigger className="w-[180px] ll-text-white ll-border-white">
-              <SelectValue placeholder="Wybierz lootlog..." />
-            </SelectTrigger>
-            <SelectContent>
-              {guilds?.map((guild) => {
-                return (
-                  <SelectItem key={guild.id} value={guild.id}>
-                    {guild.name}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-          <ScrollArea className="ll-mt-2 ll-text-white ll-h-72">
-            {Object.keys(groups).map((key) => {
-              return (
-                <div key={key} className="ll-border-b">
-                  <p className="ll-text-sm ll-capitalize ll-font-semibold ll-py-1 ll-border-b">
-                    {NPC_NAMES[key]} - {groups[key].length}
-                  </p>
-                  <div>
-                    {groups[key]?.map((timer) => {
-                      return (
-                        <SingleTimer
-                          key={timer.id}
-                          timer={timer}
-                          guildId={selectedGuildId}
-                        />
-                      );
-                    })}
-                  </div>
+        <div
+          data-opacity-lvl="4"
+          className="border-window transparent elite-timer"
+          style={{ position: "relative" }}
+        >
+          <div className="header-label-positioner">
+            <div className="header-label">
+              <div className="left-decor"></div>
+              <div className="right-decor"></div>
+              <div className="text">Lootlog</div>
+            </div>
+          </div>
+          <div className="border-image"></div>
+          <div className="close-button-corner-decor">
+            <button type="button" className="close-button"></button>
+          </div>
+          <div className="content">
+            <Select value={selectedGuildId} onValueChange={setSelectedGuildId}>
+              <SelectTrigger className="w-[180px] ll-text-white ll-border-white ll-h-7 ll-my-2">
+                <SelectValue placeholder="Wybierz lootlog..." />
+              </SelectTrigger>
+              <SelectContent>
+                {guilds?.map((guild) => {
+                  return (
+                    <SelectItem key={guild.id} value={guild.id}>
+                      {guild.name}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            <div className="inner-content">
+              <div className="window-list elite-timer-wnd">
+                <div className="scroll-wrapper">
+                  <ScrollArea className="ll-h-64">
+                    <div className="scroll-pane">
+                      {sorted?.length === 0 && (
+                        <div className="empty">----</div>
+                      )}
+                      <div className="list npc-list">
+                        {sorted?.map((timer) => {
+                          return (
+                            <SingleTimer
+                              key={timer.npc.id}
+                              timer={timer}
+                              guildId={selectedGuildId}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </ScrollArea>
                 </div>
-              );
-            })}
-          </ScrollArea>
+              </div>
+            </div>
+          </div>
         </div>
       </DraggableWindow>
     )
