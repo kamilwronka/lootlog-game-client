@@ -12,8 +12,6 @@ import { SingleTimer } from "@/features/timers/components/single-timer";
 import { useGuilds } from "@/hooks/api/use-guilds";
 import { NpcType } from "@/hooks/api/use-npcs";
 import { useTimers } from "@/hooks/api/use-timers";
-import { groupBy } from "lodash";
-import { useEffect, useRef, useState } from "react";
 
 const SORT_ORDER = [
   NpcType.TITAN,
@@ -25,12 +23,9 @@ const SORT_ORDER = [
 
 export const Timers = () => {
   const { data: guilds } = useGuilds();
-  const [selectedGuildId, setSelectedGuildId] = useState<string | undefined>(
-    undefined
-  );
-  const { timersOpen } = useGlobalContext();
+  const { timersOpen, selectedGuild, setSelectedGuild } = useGlobalContext();
 
-  const { data: timers } = useTimers({ guildId: selectedGuildId });
+  const { data: timers } = useTimers({ guildId: selectedGuild });
 
   const sorted = timers?.sort((a, b) => {
     return SORT_ORDER.indexOf(a.npc.type) - SORT_ORDER.indexOf(b.npc.type);
@@ -58,7 +53,7 @@ export const Timers = () => {
             <button type="button" className="close-button"></button>
           </div>
           <div className="content">
-            <Select value={selectedGuildId} onValueChange={setSelectedGuildId}>
+            <Select value={selectedGuild} onValueChange={setSelectedGuild}>
               <SelectTrigger className="w-[180px] ll-text-white ll-border-white ll-h-7 ll-my-2">
                 <SelectValue placeholder="Wybierz lootlog..." />
               </SelectTrigger>
@@ -75,7 +70,7 @@ export const Timers = () => {
             <div className="inner-content">
               <div className="window-list elite-timer-wnd">
                 <div className="scroll-wrapper">
-                  <ScrollArea className="ll-h-64">
+                  <ScrollArea className="ll-h-64 ll-py-2">
                     <div className="scroll-pane">
                       {sorted?.length === 0 && (
                         <div className="empty">----</div>
@@ -86,7 +81,7 @@ export const Timers = () => {
                             <SingleTimer
                               key={timer.npc.id}
                               timer={timer}
-                              guildId={selectedGuildId}
+                              guildId={selectedGuild}
                             />
                           );
                         })}
