@@ -11,7 +11,11 @@ import { useGlobalContext } from "@/contexts/global-context";
 import { SingleTimer } from "@/features/timers/components/single-timer";
 import { useGuilds } from "@/hooks/api/use-guilds";
 import { NpcType } from "@/hooks/api/use-npcs";
-import { useTimers } from "@/hooks/api/use-timers";
+import { Timer, useTimers } from "@/hooks/api/use-timers";
+import { useGateway } from "@/hooks/gateway/use-gateway";
+import { useQueryClient } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
+import { useEffect } from "react";
 
 const SORT_ORDER = [
   NpcType.TITAN,
@@ -23,13 +27,42 @@ const SORT_ORDER = [
 
 export const Timers = () => {
   const { data: guilds } = useGuilds();
-  const { timersOpen, selectedGuild, setSelectedGuild } = useGlobalContext();
+  const { timersOpen, setTimersOpen, selectedGuild, setSelectedGuild } =
+    useGlobalContext();
+  const { socket } = useGateway();
+  const queryClient = useQueryClient();
+  const world = window.Engine.worldConfig.getWorldName();
 
   const { data: timers } = useTimers({ guildId: selectedGuild });
 
   const sorted = timers?.sort((a, b) => {
     return SORT_ORDER.indexOf(a.npc.type) - SORT_ORDER.indexOf(b.npc.type);
   });
+
+  useEffect(() => {
+    if (socket && guilds) {
+      socket.on("timers-create", (data) => {
+        console.log(data);
+        queryClient.setQueryData(
+          ["guild-timers", selectedGuild, world],
+          (old: AxiosResponse<Timer[]>) => {
+            const exists = old.data.find(
+              (timer) => timer.npc.id === data.npc.id
+            );
+
+            if (exists) {
+              return {
+                data: old.data.map((timer) =>
+                  timer.npc.id === data.npc.id ? data : timer
+                ),
+              };
+            }
+            return { data: [...old.data, data] };
+          }
+        );
+      });
+    }
+  }, [socket, guilds]);
 
   // const groups = groupBy(sorted, "npc.type");
 
@@ -50,7 +83,11 @@ export const Timers = () => {
           </div>
           <div className="border-image"></div>
           <div className="close-button-corner-decor">
-            <button type="button" className="close-button"></button>
+            <button
+              type="button"
+              className="close-button"
+              onClick={() => setTimersOpen(false)}
+            ></button>
           </div>
           <div className="content">
             <Select value={selectedGuild} onValueChange={setSelectedGuild}>

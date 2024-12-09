@@ -6,6 +6,7 @@ import { GlobalContextProvider } from "./contexts/global-context";
 import { Auth0ProviderWithConfig } from "./providers/auth0-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GatewayContext, GatewayProvider } from "@/contexts/gateway-context";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,9 @@ ReactDOM.createRoot(
       <QueryClientProvider client={queryClient}>
         <Auth0ProviderWithConfig>
           <GlobalContextProvider>
-            <App />
+            <GatewayProvider>
+              <App />
+            </GatewayProvider>
           </GlobalContextProvider>
         </Auth0ProviderWithConfig>
       </QueryClientProvider>
