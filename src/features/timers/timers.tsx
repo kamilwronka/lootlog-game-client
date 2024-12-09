@@ -37,7 +37,7 @@ export const Timers = () => {
 
   const sorted = timers?.sort((a, b) => {
     return (
-      new Date(a.minSpawnTime).getTime() - new Date(b.minSpawnTime).getTime()
+      new Date(a.maxSpawnTime).getTime() - new Date(b.maxSpawnTime).getTime()
     );
   });
 
