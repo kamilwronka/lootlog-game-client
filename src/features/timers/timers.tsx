@@ -11,9 +11,11 @@ import { useGlobalContext } from "@/contexts/global-context";
 import { SingleTimer } from "@/features/timers/components/single-timer";
 import { useGuilds } from "@/hooks/api/use-guilds";
 import { NpcType } from "@/hooks/api/use-npcs";
-import { useTimers } from "@/hooks/api/use-timers";
-import { groupBy } from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { Timer, useTimers } from "@/hooks/api/use-timers";
+import { useGateway } from "@/hooks/gateway/use-gateway";
+import { useQueryClient } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
+import { useEffect } from "react";
 
 const SORT_ORDER = [
   NpcType.TITAN,
@@ -22,70 +24,116 @@ const SORT_ORDER = [
   NpcType.ELITE2,
   NpcType.ELITE,
 ];
-const NPC_NAMES: { [key: string]: string } = {
-  TITAN: "Tytan",
-  COLOSSUS: "Kolos",
-  HERO: "Heros",
-  ELITE3: "Elita III",
-  ELITE2: "Elita II",
-  ELITE: "Elita",
-};
 
 export const Timers = () => {
   const { data: guilds } = useGuilds();
-  const [selectedGuildId, setSelectedGuildId] = useState<string | undefined>(
-    undefined
-  );
-  const { timersOpen } = useGlobalContext();
+  const { timersOpen, setTimersOpen, selectedGuild, setSelectedGuild } =
+    useGlobalContext();
+  const { socket } = useGateway();
+  const queryClient = useQueryClient();
+  const world = window.Engine.worldConfig.getWorldName();
 
-  const { data: timers } = useTimers({ guildId: selectedGuildId });
+  const { data: timers } = useTimers({ guildId: selectedGuild });
 
   const sorted = timers?.sort((a, b) => {
-    return SORT_ORDER.indexOf(a.npc.type) - SORT_ORDER.indexOf(b.npc.type);
+    return (
+      new Date(a.maxSpawnTime).getTime() - new Date(b.maxSpawnTime).getTime()
+    );
   });
 
-  const groups = groupBy(sorted, "npc.type");
+  useEffect(() => {
+    if (socket && guilds) {
+      socket.on("timers-create", (data: Timer) => {
+        console.log(data);
+        queryClient.setQueryData(
+          ["guild-timers", selectedGuild, world],
+          (old: AxiosResponse<Timer[]>) => {
+            const exists = old.data.find(
+              (timer) => timer.npc.id === data.npc.id
+            );
+
+            if (exists) {
+              return {
+                data: old.data.map((timer) =>
+                  timer.npc.id === data.npc.id ? data : timer
+                ),
+              };
+            }
+            return {
+              data: [...old.data, data],
+            };
+          }
+        );
+      });
+    }
+  }, [socket, guilds]);
+
+  // const groups = groupBy(sorted, "npc.type");
 
   return (
     timersOpen && (
       <DraggableWindow id="timers">
-        <div className="ll-bg-current ll-w-[225px] ll-p-2">
-          <Select value={selectedGuildId} onValueChange={setSelectedGuildId}>
-            <SelectTrigger className="w-[180px] ll-text-white ll-border-white">
-              <SelectValue placeholder="Wybierz lootlog..." />
-            </SelectTrigger>
-            <SelectContent>
-              {guilds?.map((guild) => {
-                return (
-                  <SelectItem key={guild.id} value={guild.id}>
-                    {guild.name}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-          <ScrollArea className="ll-mt-2 ll-text-white ll-h-72">
-            {Object.keys(groups).map((key) => {
-              return (
-                <div key={key} className="ll-border-b">
-                  <p className="ll-text-sm ll-capitalize ll-font-semibold ll-py-1 ll-border-b">
-                    {NPC_NAMES[key]} - {groups[key].length}
-                  </p>
-                  <div>
-                    {groups[key]?.map((timer) => {
-                      return (
-                        <SingleTimer
-                          key={timer.id}
-                          timer={timer}
-                          guildId={selectedGuildId}
-                        />
-                      );
-                    })}
-                  </div>
+        <div
+          data-opacity-lvl="4"
+          className="border-window transparent elite-timer"
+          style={{ position: "relative" }}
+        >
+          <div className="header-label-positioner">
+            <div className="header-label">
+              <div className="left-decor"></div>
+              <div className="right-decor"></div>
+              <div className="text">Lootlog</div>
+            </div>
+          </div>
+          <div className="border-image"></div>
+          <div className="close-button-corner-decor">
+            <button
+              type="button"
+              className="close-button"
+              onClick={() => setTimersOpen(false)}
+            ></button>
+          </div>
+          <div className="content">
+            <Select value={selectedGuild} onValueChange={setSelectedGuild}>
+              <SelectTrigger className="w-[180px] ll-text-white ll-border-white ll-h-4 ll-my-1">
+                <SelectValue
+                  placeholder="Wybierz lootlog..."
+                  className="ll-h-4"
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {guilds?.map((guild) => {
+                  return (
+                    <SelectItem key={guild.id} value={guild.id}>
+                      {guild.name}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            <div className="inner-content">
+              <div className="window-list elite-timer-wnd">
+                <div className="scroll-wrapper">
+                  <ScrollArea className="ll-h-72 ll-py-1">
+                    {/* <div className="scroll-pane"> */}
+                    {sorted?.length === 0 && <div className="empty">----</div>}
+                    <div className="list npc-list">
+                      {sorted?.map((timer) => {
+                        return (
+                          <SingleTimer
+                            key={timer.npc.id}
+                            timer={timer}
+                            guildId={selectedGuild}
+                          />
+                        );
+                      })}
+                    </div>
+                    {/* </div> */}
+                  </ScrollArea>
                 </div>
-              );
-            })}
-          </ScrollArea>
+              </div>
+            </div>
+          </div>
         </div>
       </DraggableWindow>
     )

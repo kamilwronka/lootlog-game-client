@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useLocalStorage } from "react-use";
 
 export type GlobalContextType = {
   initialized: boolean;
-  timersOpen: boolean;
-  setTimersOpen: (open: boolean) => void;
+  timersOpen: boolean | undefined;
+  setTimersOpen: (open: boolean | undefined) => void;
+  selectedGuild: string | undefined;
+  setSelectedGuild: (guild: string | undefined) => void;
 };
 
 export const GlobalContext = createContext<GlobalContextType>(
@@ -16,7 +19,8 @@ export const GlobalContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [initialized, setInitialized] = useState(false);
-  const [timersOpen, setTimersOpen] = useState(false);
+  const [timersOpen, setTimersOpen] = useLocalStorage("timers", false);
+  const [selectedGuild, setSelectedGuild] = useLocalStorage("guild", "");
 
   const init = async () => {
     const initialized =
@@ -39,6 +43,8 @@ export const GlobalContextProvider = ({
     initialized,
     timersOpen,
     setTimersOpen,
+    selectedGuild,
+    setSelectedGuild,
   };
 
   return (
