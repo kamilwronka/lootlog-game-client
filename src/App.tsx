@@ -4,7 +4,7 @@ import { useGameEventsParser } from "@/hooks/use-game-events-parser";
 
 function App() {
   useGameEventsParser();
-  console.log("test");
+
   return (
     <>
       <Timers />
