@@ -51,6 +51,8 @@ export const useGameEventsParser = () => {
 
     if (keys.length <= 2) return;
 
+    console.log(event);
+
     if (event.d) {
       const npcId = event.d[2];
 
