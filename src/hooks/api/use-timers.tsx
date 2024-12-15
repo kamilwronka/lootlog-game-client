@@ -4,6 +4,7 @@ import { useAuthenticatedApiClient } from "@/hooks/api/use-api-client";
 import { GuildMember } from "@/hooks/api/use-guild-members";
 import { Npc } from "@/hooks/api/use-npcs";
 import { API_URL } from "@/config/api";
+import { useGlobalContext } from "@/contexts/global-context";
 
 export type Timer = {
   id: number;
@@ -19,7 +20,9 @@ type UseTimersOptions = {
 
 export const useTimers = ({ guildId }: UseTimersOptions) => {
   const { client, hasToken } = useAuthenticatedApiClient();
-  const world = window.Engine.worldConfig.getWorldName();
+  const { newInterface } = useGlobalContext();
+
+  const world = newInterface ? window.Engine?.worldConfig?.getWorldName() : window.g?.worldConfig?.getWorldName();
 
   const queryParams = {
     world,
