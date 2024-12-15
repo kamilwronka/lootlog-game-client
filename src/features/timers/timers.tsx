@@ -27,14 +27,12 @@ const SORT_ORDER = [
 
 export const Timers = () => {
   const { data: guilds } = useGuilds();
-  const { timersOpen, setTimersOpen, selectedGuild, setSelectedGuild } =
-    useGlobalContext();
+  const { newInterface, timersOpen, setTimersOpen, selectedGuild, setSelectedGuild } = useGlobalContext();
   const { socket } = useGateway();
   const queryClient = useQueryClient();
-  const world = window.Engine.worldConfig.getWorldName();
-
   const { data: timers } = useTimers({ guildId: selectedGuild });
-
+  const world = newInterface ? window.Engine?.worldConfig?.getWorldName() : window.g?.worldConfig?.getWorldName();
+      
   const sorted = timers?.sort((a, b) => {
     return (
       new Date(a.maxSpawnTime).getTime() - new Date(b.maxSpawnTime).getTime()

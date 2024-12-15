@@ -22,6 +22,10 @@ export type NpcMap = {
   [key: string]: Npc;
 };
 
+export type OldNpcMap = {
+  [key: string]: NpcD;
+};
+
 export type Npcs = {
   getDrawableList: () => Npc[];
   check: () => NpcMap;
