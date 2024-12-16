@@ -8,6 +8,8 @@ import { NpcIconManager } from "@/types/margonem/npc-icon-manager";
 import { WorldConfig } from "@/types/margonem/world-config";
 import { ChangePlayer } from "@/types/margonem/change-player";
 import { Others } from "@/types/margonem/others";
+import { WidgetManager } from "./widget-manager";
+import { ServerStorage } from "./server-storage";
 
 export type Engine = {
   npcs: Npcs;
@@ -20,4 +22,6 @@ export type Engine = {
   worldConfig: WorldConfig;
   changePlayer: ChangePlayer;
   others: Others;
+  widgetManager: WidgetManager;
+  serverStorage: ServerStorage;
 };

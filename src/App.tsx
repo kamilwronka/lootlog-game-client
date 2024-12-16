@@ -5,15 +5,16 @@ import { useGlobalContext } from "./contexts/global-context";
 
 function App() {
   useGameEventsParser();
-  const {initialized} = useGlobalContext();
-  
+  const { initialized } = useGlobalContext();
+
   return (
     <>
-      {initialized && 
-      <>
-        <Timers />
-        <Settings />
-      </>}
+      {initialized && (
+        <>
+          <Timers />
+          <Settings />
+        </>
+      )}
     </>
   );
 }
