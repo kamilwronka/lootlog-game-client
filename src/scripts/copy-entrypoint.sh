@@ -3,7 +3,7 @@
 echo "Copying entrypoint to dist";
 
 # Default environment
-default_env="develop"
+default_env="prod"
 # Use provided ENVIRONMENT variable or default to 'develop'
 env=${ENVIRONMENT:-$default_env}
 
