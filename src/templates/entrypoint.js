@@ -22,8 +22,8 @@
 
   const script = document.createElement("script");
   script.src = `https://${
-    env ?? "develop"
-  }.lootlog-game-client.pages.dev/lootlog-client.user.js?ts=${Date.now()}`;
+    env === "develop" ? "develop." : ""
+  }lootlog-game-client.pages.dev/lootlog-client.user.js?ts=${Date.now()}`;
 
   document.head.appendChild(script);
 })();
