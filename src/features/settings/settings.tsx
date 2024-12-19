@@ -6,13 +6,18 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 export const Settings = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { isAuthenticated, loginWithPopup, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithPopup, loginWithRedirect, logout } =
+    useAuth0();
   const { timersOpen, setTimersOpen, newInterface } = useGlobalContext();
   const [isWidgetLoaded, setisWidgetLoaded] = useState(false);
 
   const handleLogin = () => {
     loginWithPopup();
     // loginWithRedirect();
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   const handleTimersToggle = () => {
@@ -90,6 +95,9 @@ export const Settings = () => {
               <Button onClick={handleTimersToggle}>Pokaż/ukryj timery</Button>
               {!isAuthenticated && (
                 <Button onClick={handleLogin}>Zaloguj się</Button>
+              )}
+              {isAuthenticated && (
+                <Button onClick={handleLogout}>Wyloguj się</Button>
               )}
             </div>
           </div>
