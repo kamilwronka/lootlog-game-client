@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && sh ./src/scripts/copy-entrypoint.sh",
+    "build": "tsc && vite build && bash ./src/scripts/copy-entrypoint.sh",
     "preview": "vite preview"
   },
   "dependencies": {
