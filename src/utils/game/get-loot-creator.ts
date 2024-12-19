@@ -1,5 +1,8 @@
+import { useGlobalContext } from "@/contexts/global-context";
+
 export const getLootCreator = () => {
-  const { id, lvl, account, prof, img, nick } = window.Engine.hero.d;
+  const { newInterface } = useGlobalContext();
+  const { id, lvl, account, prof, img, nick } = newInterface ? window.Engine.hero.d : window.hero.d;
 
   return {
     id,

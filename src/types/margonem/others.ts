@@ -11,6 +11,10 @@ export type Other = {
   d: OtherD;
 };
 
+export type OldOtherMap = {
+  [key: string]: OtherD;
+};
+
 export type OtherMap = {
   [key: string]: Other;
 };

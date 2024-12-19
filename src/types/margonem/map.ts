@@ -4,4 +4,7 @@ export type Map = {
     name: string;
     id: number;
   };
+  visibility: number;
+  name: string;
+  id: number;
 };
