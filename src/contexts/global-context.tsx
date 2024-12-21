@@ -3,7 +3,6 @@ import { useLocalStorage } from "react-use";
 
 export type GlobalContextType = {
   initialized: boolean;
-  newInterface: boolean;
   timersOpen: boolean | undefined;
   setTimersOpen: (open: boolean | undefined) => void;
   selectedGuild: string | undefined;
@@ -20,24 +19,23 @@ export const GlobalContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [initialized, setInitialized] = useState(false);
-  const [newInterface, setNewInterface] = useState(false);
   const [timersOpen, setTimersOpen] = useLocalStorage("timers", false);
   const [selectedGuild, setSelectedGuild] = useLocalStorage("guild", "");
 
   const init = async () => {
-    const started = typeof window._g == 'function';
+    const started = typeof window._g == "function";
     if (!started) {
       setTimeout(init, 500);
       return;
     }
 
-    const isNI = typeof window.Engine == 'object';
-    setNewInterface(isNI);
+    const isNI = typeof window.Engine == "object";
 
-    const initialized = isNI ? 
-        (window.Engine?.interface?.alreadyInitialised || window.Engine?.interface?.getAlreadyInitialised?.()) 
-        : window.g?.init === 5;
-        
+    const initialized = isNI
+      ? window.Engine?.interface?.alreadyInitialised ||
+        window.Engine?.interface?.getAlreadyInitialised?.()
+      : window.g?.init === 5;
+
     if (!initialized) {
       setTimeout(init, 500);
       return;
@@ -51,7 +49,6 @@ export const GlobalContextProvider = ({
   }, []);
 
   const value: GlobalContextType = {
-    newInterface,
     initialized,
     timersOpen,
     setTimersOpen,

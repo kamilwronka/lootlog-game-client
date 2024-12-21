@@ -84,6 +84,7 @@ export const GatewayProvider: React.FC<Props> = (props) => {
   }, [token, guildIds, initialized]);
 
   useEffect(() => {
+    return;
     if (token) {
       const socket = io(GATEWAY_URL, {
         transports: ["websocket"],

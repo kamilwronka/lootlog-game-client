@@ -4,7 +4,7 @@ import { useCreateTimer } from "@/hooks/api/useCreateTimer";
 import { W } from "@/types/margonem/game-events/f";
 import { GameEvent } from "@/types/margonem/game-events/game-event";
 import { HeroD } from "@/types/margonem/hero";
-import { checkIfNpcIsWithinRange } from "@/utils/game/check-if-npc-within-range";
+import { checkIfNpcIsWithinRange } from "@/utils/game/is-npc-within-hero-range";
 import {
   getBattleParticipants,
   KilledNpc,

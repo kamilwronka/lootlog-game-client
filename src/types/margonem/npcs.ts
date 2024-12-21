@@ -1,8 +1,8 @@
 export type Npc = {
-  d: NpcD;
+  d: NpcData;
 };
 
-export type NpcD = {
+export type NpcData = {
   icon: string;
   id: number;
   tpl: number;
@@ -16,6 +16,7 @@ export type NpcD = {
   grp: number;
   lvl: number;
   resp_rand?: number;
+  isHeroFromEvent?: boolean;
 };
 
 export type NpcMap = {
@@ -23,7 +24,7 @@ export type NpcMap = {
 };
 
 export type OldNpcMap = {
-  [key: string]: NpcD;
+  [key: string]: NpcData;
 };
 
 export type Npcs = {

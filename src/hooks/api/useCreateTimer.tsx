@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthToken } from "../auth/use-auth-token";
 import { API_URL } from "@/config/api";
@@ -15,7 +15,6 @@ export type UseCreateTimerOptions = {
     type: number;
     lvl: number;
     location: string;
-    hpp: number;
     wt: number;
   };
 };

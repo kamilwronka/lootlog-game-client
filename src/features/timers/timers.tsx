@@ -13,26 +13,22 @@ import { useGuilds } from "@/hooks/api/use-guilds";
 import { NpcType } from "@/hooks/api/use-npcs";
 import { Timer, useTimers } from "@/hooks/api/use-timers";
 import { useGateway } from "@/hooks/gateway/use-gateway";
+import { isNi } from "@/utils/is-ni";
 import { useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 
-const SORT_ORDER = [
-  NpcType.TITAN,
-  NpcType.COLOSSUS,
-  NpcType.HERO,
-  NpcType.ELITE2,
-  NpcType.ELITE,
-];
-
 export const Timers = () => {
   const { data: guilds } = useGuilds();
-  const { newInterface, timersOpen, setTimersOpen, selectedGuild, setSelectedGuild } = useGlobalContext();
+  const { timersOpen, setTimersOpen, selectedGuild, setSelectedGuild } =
+    useGlobalContext();
   const { socket } = useGateway();
   const queryClient = useQueryClient();
   const { data: timers } = useTimers({ guildId: selectedGuild });
-  const world = newInterface ? window.Engine?.worldConfig?.getWorldName() : window.g?.worldConfig?.getWorldName();
-      
+  const world = isNi()
+    ? window.Engine?.worldConfig?.getWorldName()
+    : window.g?.worldConfig?.getWorldName();
+
   const sorted = timers?.sort((a, b) => {
     return (
       new Date(a.maxSpawnTime).getTime() - new Date(b.maxSpawnTime).getTime()
